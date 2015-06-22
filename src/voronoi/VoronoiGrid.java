@@ -5,6 +5,7 @@
  */
 package voronoi;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import javafx.util.Pair;
 
@@ -33,7 +34,7 @@ public class VoronoiGrid {
          int playerid;//0 for first player, 1 for second
          int maxPoints;
          boolean complete = false;
-         private ArrayList<Pair> points;//stores all points as a Pair see javafx.util.Pair
+         private final ArrayList<Pair> points;//stores all points as a Pair see javafx.util.Pair
          //TODO consider a more optimal storage of points on a larger scale, everything is good when life is O(1)!
          
          public Player(int id, int max)
@@ -47,8 +48,17 @@ public class VoronoiGrid {
          //TODO change these if the container for Pairs is changed
          public int addPoint(int x, int y)
          {
-             if(hasPoint(x,y) || points.size() >= maxPoints)
+             if(hasPoint(x,y))
+             {
+                 System.out.println("point taken.");
                  return EXIT_FAILURE;
+             }
+             
+             if(points.size() >= maxPoints)
+             {
+                 System.out.println("reached max");
+                 return EXIT_FAILURE;
+             }
              points.add(new Pair(x, y));
              maxPoints++;
              
@@ -64,7 +74,12 @@ public class VoronoiGrid {
              return points.contains(new Pair(x,y));
          }
          
-         public String print()
+        /**
+         *returns a string containing information on the player itself 
+         * and on every point this player has, used for debugging
+         * @return the string containing information  
+         */
+        public String print()
          {
              String result = playerid + ", ";
              for (Pair temp : points) {
@@ -72,6 +87,17 @@ public class VoronoiGrid {
                         result += " ";
 		}
              return result;
+         }
+         
+        /**
+         * sets the maximum number of points a player can have. 
+         * Both players MUST have the same number of points and 
+         * this is used only in the constructor
+         * @param n the new number of maxPoints
+         */
+        private void setMaxPoints(int n)
+         {
+             this.maxPoints = n;
          }
     }
     
@@ -88,7 +114,8 @@ public class VoronoiGrid {
     public VoronoiGrid(int n)
     {
         super();
-        //we have maxPoints to be double the maximum for each Player
+        players[0].setMaxPoints(n);
+        players[1].setMaxPoints(n);
     }
     
     public void changePlayer()
