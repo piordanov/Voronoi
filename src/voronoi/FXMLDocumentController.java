@@ -12,14 +12,17 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import voronoi.VoronoiGrid.*;
+import javafx.scene.shape.*;
+
+import javafx.scene.paint.Color;
 
 /**
  *
@@ -31,7 +34,7 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private Label label;
     @FXML
-    private Canvas canvas;
+    private AnchorPane canvas;
     private VoronoiGrid grid;
     private int numplacedpoints = 0;
     @FXML
@@ -63,15 +66,29 @@ public class FXMLDocumentController implements Initializable {
             Player p = grid.getCurrPlayer();
             int result = p.addPoint(x,y);
             if(result != EXIT_FAILURE)
-            {
+            {               
+                Circle c = new Circle();
+                //draw the circle
+                c.setCenterX(x);
+                c.setCenterY(y);
+                c.setRadius(3);
+                c.setOpacity(1);
+                if(grid.getCurrPlayer().playerid == 0)//player one is orange
+                    c.setFill(Color.ORANGE);
+                else //player 2 is blue
+                    c.setFill(Color.BLUE);
+ 
+                
+                canvas.getChildren().add(c);
                 System.out.println("Point added");
+                numplacedpoints++;
             }
             else
             {
                 System.out.println("No more points to be placed");
                 //TODO stop this controller, begin Fortune's algorithm
+                
             }
-            
             
             grid.changePlayer();
         }
