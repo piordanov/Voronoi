@@ -39,8 +39,4 @@ public class Voronoi extends Application {
     }
     
     
-    public static void addPoint(GraphicsContext gc, Stage s)
-    {
-        
-    }
 }

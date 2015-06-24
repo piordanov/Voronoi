@@ -5,7 +5,6 @@
  */
 package voronoi;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import javafx.util.Pair;
 
@@ -60,10 +59,9 @@ public class VoronoiGrid {
                  return EXIT_FAILURE;
              }
              points.add(new Pair(x, y));
-             maxPoints++;
              
              System.out.println(this.print());
-             if(points.size() == maxPoints)
+             if(points.size() >= maxPoints)
                  complete = true;//indicating we are done
              return EXIT_SUCCESS;
          }
