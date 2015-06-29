@@ -8,6 +8,7 @@ package voronoi;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Random;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,6 +22,9 @@ import voronoi.VoronoiGrid.*;
 import javafx.scene.shape.*;
 
 import javafx.scene.paint.Color;
+import be.humphreys.simplevoronoi.GraphEdge;
+import java.util.List;
+import javafx.util.Pair;
 
 /**
  *
@@ -40,6 +44,8 @@ public class FXMLDocumentController implements Initializable {
     private int numplacedpoints = 0;
     @FXML
     private Button coordinateButton;
+    @FXML
+    private Button drawButton;
     /*
     @FXML
     private Button button2;
@@ -61,18 +67,20 @@ public class FXMLDocumentController implements Initializable {
        */
     
     /*
-    checks to see if a string is a number, does not work for non latin numbers i.e 0-9
+    checks to see if a string is a number, works only for latin numbers i.e 0-9
     */
     public static boolean isNumeric(String str)
     {
         return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
     }
-    
-    public void drawPoint(int x, int y)
+    //
+    public void drawPoint(int x, int y, boolean init)
     {
             System.out.println(x +":" + y + "clicked.");
             Player p = grid.getCurrPlayer();
-            int result = p.addPoint(x,y);
+            int result = EXIT_SUCCESS;
+            if(!init)
+                result = p.addPoint(x,y);
             if(result != EXIT_FAILURE)
             {               
                 Circle c = new Circle();
@@ -81,7 +89,12 @@ public class FXMLDocumentController implements Initializable {
                 c.setCenterY(y);
                 c.setRadius(3);
                 c.setOpacity(1);
-                if(grid.getCurrPlayer().playerid == 0)//player one is orange
+                if(init) //for drawing random init points
+                {
+                    c.setFill(Color.BLACK);
+                    c.setRadius(2);
+                }
+                else if(grid.getCurrPlayer().playerid == 0)//player one is orange
                     c.setFill(Color.ORANGE);
                 else //player 2 is blue
                     c.setFill(Color.BLUE);
@@ -104,7 +117,8 @@ public class FXMLDocumentController implements Initializable {
             int x = (int) event.getX();
             int y = (int) event.getY();
  
-            drawPoint(x,y);
+            drawPoint(x,y, false);
+            label.setText("Point added");
             grid.changePlayer();
             //label.setText("");
         }
@@ -122,7 +136,7 @@ public class FXMLDocumentController implements Initializable {
                 int y = Integer.parseInt(yString);
                 if(x <= canvas.getWidth() && y <= canvas.getHeight() && x >= 0 && y >= 0)
                 {
-                    drawPoint(x,y);
+                    drawPoint(x,y, false);
                     grid.changePlayer();
                     label.setText("Point added");
                 }
@@ -137,12 +151,35 @@ public class FXMLDocumentController implements Initializable {
             }
 
         }
+        
+    @FXML
+        private void drawDiagram(ActionEvent event)
+        {
+            label.setText("Drawing ...");
+            List<GraphEdge> list = grid.createDiagram();
+            //draw the graph
+            for(GraphEdge edge: list)
+            {
+                Line line = new Line();
+                line.setStartX(edge.x1);
+                line.setStartY(edge.y1);
+                line.setEndX(edge.x2);
+                line.setEndY(edge.y2);
+                canvas.getChildren().add(line);
+            }
+            label.setText("Complete");
+        }
        
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         grid = new VoronoiGrid();
-        
+        //we now draw a random number of points, between 10 - 60
+        for (Pair p : grid.freePoints) {
+            int x = (int) p.getKey();
+            int y = (int) p.getValue();
+            drawPoint(x,y, true);
+        }
     }    
     
 }

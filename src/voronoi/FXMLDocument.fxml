@@ -21,5 +21,6 @@
       <TextField fx:id="yInput" layoutX="76.0" layoutY="443.0" prefHeight="25.0" prefWidth="52.0" promptText="y" />
       <TextField layoutX="14.0" layoutY="443.0" prefHeight="25.0" prefWidth="52.0" promptText="x" fx:id="xInput" />
       <Label fx:id="label" layoutX="14.0" layoutY="486.0" prefHeight="25.0" prefWidth="194.0" />
+      <Button fx:id="drawButton" layoutX="218.0" layoutY="443.0" mnemonicParsing="false" onAction="#drawDiagram" text="Draw Diagram" />
     </children>
 </AnchorPane>
