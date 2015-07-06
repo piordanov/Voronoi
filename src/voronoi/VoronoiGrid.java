@@ -39,7 +39,7 @@ public class VoronoiGrid {
         currPlayerID = 0;
         freePoints = new ArrayList();
         Random numgen = new Random();
-        int n = numgen.nextInt(50)  + 10;
+        int n = numgen.nextInt(100)  + 10;
         for(int i = 0; i < n; i++)
         {
             double x = numgen.nextInt( 700 );// HOTFIX going to assume canvas size is fixed for now
@@ -57,7 +57,7 @@ public class VoronoiGrid {
         currPlayerID = 0;
         freePoints = new ArrayList();
         Random numgen = new Random();
-        int n = numgen.nextInt(50)  + 10;
+        int n = numgen.nextInt(100)  + 10;
         for(int i = 0; i < n; i++)
         {
             double x = numgen.nextInt( 700 );// HOTFIX going to assume canvas size is fixed for now

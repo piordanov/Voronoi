@@ -21,8 +21,14 @@ import javafx.scene.shape.*;
 
 import javafx.scene.paint.Color;
 import be.humphreys.simplevoronoi.GraphEdge;
+import java.io.IOException;
 import java.util.List;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ColorPicker;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 import static voronoi.VoronoiGrid.EXIT_FAILURE;
 import static voronoi.VoronoiGrid.EXIT_SUCCESS;
@@ -45,7 +51,7 @@ public class FXMLDocumentController implements Initializable {
     private VoronoiGrid grid;
     private int numplacedpoints = 0;
     @FXML
-    private Button coordinateButton, drawButton, newGameButton;
+    private Button coordinateButton, drawButton, newGameButton, helpButton;
     
     private Color playerColor1 = Color.ORANGE, playerColor2 = Color.BLUE;
     @FXML
@@ -108,7 +114,10 @@ public class FXMLDocumentController implements Initializable {
             int y = (int) event.getY();
  
             drawPoint(x,y, false);
-            //responseLabel.setText("Point added");
+            if(grid.players[0].isDone() && grid.players[1].isDone())
+                responseLabel.setText("All points added.");
+            else
+                responseLabel.setText("Point added.");
             changePlayer();
             //label.setText("");
         }
@@ -116,6 +125,7 @@ public class FXMLDocumentController implements Initializable {
     @FXML
         private void handleMouseHover(MouseEvent event)
         {
+            selector.setVisible(true);
             selector.setCenterX(event.getSceneX());
             selector.setCenterY(event.getSceneY());
             xInput.setText(Double.toString(event.getSceneX()));
@@ -124,6 +134,18 @@ public class FXMLDocumentController implements Initializable {
                 selector.setVisible(false);
             
         }
+        
+    @FXML
+    private void handleHelp(ActionEvent e) throws IOException
+    {
+        Stage stage2 = new Stage();
+        Parent root = FXMLLoader.load(getClass().getResource("Help.fxml"));
+        stage2.setScene(new Scene(root));
+        stage2.setTitle("To Use This Program");
+        stage2.initModality(Modality.APPLICATION_MODAL);
+        stage2.show();
+                
+    }
         
     @FXML
         private void addInputPoint(ActionEvent event)
@@ -209,6 +231,7 @@ public class FXMLDocumentController implements Initializable {
                             + "for each person and for the field, otherwise put \"random\"");
                     return;//exit since we have no points to draw
             }
+            responseLabel.setText("New Game started.");
             drawFreePoints();
         }
         
@@ -227,6 +250,7 @@ public class FXMLDocumentController implements Initializable {
         grid = new VoronoiGrid();
         //we now draw the random number of points made by VoronoiGrid
         drawFreePoints();
+        selector.setVisible(false);
         playerColorPicker1.setValue(Color.ORANGE);
         playerColorPicker2.setValue(Color.BLUE);
         
