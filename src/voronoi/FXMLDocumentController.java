@@ -8,7 +8,6 @@ package voronoi;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Random;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,53 +17,40 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import voronoi.VoronoiGrid.*;
 import javafx.scene.shape.*;
 
 import javafx.scene.paint.Color;
 import be.humphreys.simplevoronoi.GraphEdge;
 import java.util.List;
+import javafx.scene.control.ColorPicker;
 import javafx.util.Pair;
+import static voronoi.VoronoiGrid.EXIT_FAILURE;
+import static voronoi.VoronoiGrid.EXIT_SUCCESS;
 
 /**
  *
  * @author Peter Iordanov
  */
 public class FXMLDocumentController implements Initializable {
-    public static final int EXIT_SUCCESS = 0;
-    public static final int EXIT_FAILURE = 1;
+
     @FXML
-    private TextField xInput, yInput;
+    private TextField xInput, yInput, ptsOnFieldLabel, ptsPerPersonLabel;
     @FXML
-    private Label label;
+    private Label responseLabel, player1score, player2score;
     @FXML
     private AnchorPane canvas;
+    @FXML
+    private Circle selector;
     
     private VoronoiGrid grid;
     private int numplacedpoints = 0;
     @FXML
-    private Button coordinateButton;
-    @FXML
-    private Button drawButton;
-    /*
-    @FXML
-    private Button button2;
-    @FXML
-    private void handleButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
-        label.setText("Hello World!");
-        Stage stage = (Stage) label.getScene().getWindow();
-        // Swap screen
-        stage.setScene(new Scene(new Pane()));
-    }
+    private Button coordinateButton, drawButton, newGameButton;
     
+    private Color playerColor1 = Color.ORANGE, playerColor2 = Color.BLUE;
     @FXML
-       private void handleButtonAction2(ActionEvent event)
-       {
-           System.out.println("Ha!");
-          label.setText("This is a test.");
-       }
-       */
+    private ColorPicker playerColorPicker1, playerColorPicker2;
+
     
     /*
     checks to see if a string is a number, works only for latin numbers i.e 0-9
@@ -73,16 +59,25 @@ public class FXMLDocumentController implements Initializable {
     {
         return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
     }
-    //
-    public void drawPoint(int x, int y, boolean init)
+    
+    public void changePlayer()
     {
-            System.out.println(x +":" + y + "clicked.");
+        grid.changePlayer();
+        if(grid.getCurrPlayer().getPlayerId() == 0)//player one is orange
+                    selector.setFill(playerColor1);
+        else
+            selector.setFill(playerColor2);
+    }
+    //
+    public void drawPoint(double x, double y, boolean init)
+    {
+            //System.out.println(x +":" + y + "clicked.");
             Player p = grid.getCurrPlayer();
             int result = EXIT_SUCCESS;
             if(!init)
                 result = p.addPoint(x,y);
             if(result != EXIT_FAILURE)
-            {               
+            {
                 Circle c = new Circle();
                 //draw the circle
                 c.setCenterX(x);
@@ -94,23 +89,18 @@ public class FXMLDocumentController implements Initializable {
                     c.setFill(Color.BLACK);
                     c.setRadius(2);
                 }
-                else if(grid.getCurrPlayer().playerid == 0)//player one is orange
-                    c.setFill(Color.ORANGE);
+                else if(grid.getCurrPlayer().getPlayerId() == 0)//player one is orange
+                    c.setFill(playerColor1);
                 else //player 2 is blue
-                    c.setFill(Color.BLUE);
+                    c.setFill(playerColor2);
  
                 
                 canvas.getChildren().add(c);
-                System.out.println("Point added");
+                //System.out.println("Point added");
                 numplacedpoints++;
             }
-            else
-            {
-                System.out.println("No more points to be placed");
-                //TODO stop this controller, begin Fortune's algorithm
-            }
     }
-
+    //on click
     @FXML
         private void handleMouseCreatePoint(MouseEvent event)
         {
@@ -118,9 +108,21 @@ public class FXMLDocumentController implements Initializable {
             int y = (int) event.getY();
  
             drawPoint(x,y, false);
-            label.setText("Point added");
-            grid.changePlayer();
+            //responseLabel.setText("Point added");
+            changePlayer();
             //label.setText("");
+        }
+    //on Move 
+    @FXML
+        private void handleMouseHover(MouseEvent event)
+        {
+            selector.setCenterX(event.getSceneX());
+            selector.setCenterY(event.getSceneY());
+            xInput.setText(Double.toString(event.getSceneX()));
+            yInput.setText(Double.toString(event.getSceneY()));
+            if(grid.getCurrPlayer().isDone())
+                selector.setVisible(false);
+            
         }
         
     @FXML
@@ -137,17 +139,18 @@ public class FXMLDocumentController implements Initializable {
                 if(x <= canvas.getWidth() && y <= canvas.getHeight() && x >= 0 && y >= 0)
                 {
                     drawPoint(x,y, false);
-                    grid.changePlayer();
-                    label.setText("Point added");
+                    changePlayer();
+                    
+                    responseLabel.setText("Point added");
                 }
                 else
                 {
-                    label.setText("Error, input is out of bounds.");
+                    responseLabel.setText("Error, input is out of bounds.");
                 }
             }
             else
             {
-                label.setText("Error, input is not a number.");
+                responseLabel.setText("Error, input is not a number.");
             }
 
         }
@@ -155,7 +158,13 @@ public class FXMLDocumentController implements Initializable {
     @FXML
         private void drawDiagram(ActionEvent event)
         {
-            label.setText("Drawing ...");
+            //need to make sure points are drawn
+            if(!grid.players[0].isDone() || !grid.players[1].isDone())
+            {
+                responseLabel.setText("Not all points have been placed.");
+                return;
+            }
+            responseLabel.setText("Drawing ...");
             List<GraphEdge> list = grid.createDiagram();
             //draw the graph
             for(GraphEdge edge: list)
@@ -167,19 +176,61 @@ public class FXMLDocumentController implements Initializable {
                 line.setEndY(edge.y2);
                 canvas.getChildren().add(line);
             }
-            label.setText("Complete");
+            responseLabel.setText("Complete!");
+            double[] results = grid.calculatePoints();
+            player1score.setText(Double.toString(results[0]));
+            player2score.setText(Double.toString(results[1]));
         }
+        
+        @FXML
+        private void startNewGame(ActionEvent event)
+        {
+            canvas.getChildren().clear();
+            canvas.getChildren().add(selector);
+            selector.setVisible(true);
+            selector.setFill(playerColorPicker1.getValue());
+            String fieldPoints = ptsOnFieldLabel.getText();
+            String playerPoints = ptsPerPersonLabel.getText();
+            playerColor1 = playerColorPicker1.getValue();
+            playerColor2 = playerColorPicker2.getValue();
+            if(fieldPoints.toLowerCase().equals("random") && isNumeric(playerPoints))
+            {
+                grid = new VoronoiGrid( (int) Integer.parseInt(playerPoints));                 
+            }
+            else if(isNumeric(fieldPoints) || isNumeric(playerPoints))
+            {
+                int pPoints = Integer.parseInt(playerPoints);
+                int fPoints = Integer.parseInt(fieldPoints);
+                grid = new VoronoiGrid( (int) pPoints, (int) fPoints);
+            }
+            else
+            {
+                    responseLabel.setText("Please insert a number of points "
+                            + "for each person and for the field, otherwise put \"random\"");
+                    return;//exit since we have no points to draw
+            }
+            drawFreePoints();
+        }
+        
+    private void drawFreePoints()
+    {
+        for (Pair p : grid.freePoints) {
+            double x = (double) p.getKey();
+            double y = (double) p.getValue();
+            drawPoint(x,y, true);
+        }
+    }
        
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         grid = new VoronoiGrid();
-        //we now draw a random number of points, between 10 - 60
-        for (Pair p : grid.freePoints) {
-            int x = (int) p.getKey();
-            int y = (int) p.getValue();
-            drawPoint(x,y, true);
-        }
+        //we now draw the random number of points made by VoronoiGrid
+        drawFreePoints();
+        playerColorPicker1.setValue(Color.ORANGE);
+        playerColorPicker2.setValue(Color.BLUE);
+        
+        
     }    
     
 }
