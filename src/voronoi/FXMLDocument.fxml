@@ -20,7 +20,7 @@
             <Circle fx:id="selector" centerX="0.0" centerY="0.0" fill="ORANGE" radius="3.0" stroke="TRANSPARENT" strokeType="INSIDE" />         
          </children>
       </AnchorPane>
-      <Label fx:id="responseLabel" layoutX="399.0" layoutY="479.0" prefHeight="50.0" prefWidth="361.0" />
+      <Label fx:id="responseLabel" layoutX="399.0" layoutY="479.0" prefHeight="50.0" prefWidth="361.0" wrapText="true" />
       <Label fx:id="player2score" layoutX="200.0" layoutY="499.0" prefHeight="17.0" prefWidth="41.0" />
       <Label fx:id="player1score" layoutX="78.0" layoutY="499.0" prefHeight="17.0" prefWidth="41.0" />
       <Label layoutX="21.0" layoutY="499.0" text="Player 1" />

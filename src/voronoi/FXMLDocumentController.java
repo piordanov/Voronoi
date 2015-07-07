@@ -11,7 +11,6 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -49,9 +48,6 @@ public class FXMLDocumentController implements Initializable {
     private Circle selector;
     
     private VoronoiGrid grid;
-    private int numplacedpoints = 0;
-    @FXML
-    private Button coordinateButton, drawButton, newGameButton, helpButton;
     
     private Color playerColor1 = Color.ORANGE, playerColor2 = Color.BLUE;
     @FXML
@@ -103,7 +99,6 @@ public class FXMLDocumentController implements Initializable {
                 
                 canvas.getChildren().add(c);
                 //System.out.println("Point added");
-                numplacedpoints++;
             }
     }
     //on click
@@ -219,7 +214,7 @@ public class FXMLDocumentController implements Initializable {
             {
                 grid = new VoronoiGrid( (int) Integer.parseInt(playerPoints));                 
             }
-            else if(isNumeric(fieldPoints) || isNumeric(playerPoints))
+            else if(isNumeric(fieldPoints) && isNumeric(playerPoints))
             {
                 int pPoints = Integer.parseInt(playerPoints);
                 int fPoints = Integer.parseInt(fieldPoints);

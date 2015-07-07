@@ -16,8 +16,6 @@ import javafx.stage.Stage;
  * @author Peter Iordanov
  */
 public class Voronoi extends Application {
-    public static final int EXIT_SUCCESS = 0;
-    public static final int EXIT_FAILURE = 1;
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));

@@ -158,7 +158,7 @@ public class VoronoiGrid {
                     bestpointsp0.add(p0point);
                     bestdistancep0 = dist;
                 }
-                else if( Math.abs(dist - bestdistancep0) < 1)// a little leeway
+                else if(dist == bestdistancep0)// a little leeway
                 {
                     bestpointsp0.add(p0point);
                 }
@@ -174,12 +174,12 @@ public class VoronoiGrid {
                     bestpointsp1.add(p1point);
                     bestdistancep1 = dist;
                 }
-                else if(Math.abs(dist - bestdistancep1) < 1)
+                else if(Math.abs(dist - bestdistancep1) < 2)
                 {
                     bestpointsp1.add(p1point);
                 }
             }            
-            if(Math.abs(bestdistancep0 - bestdistancep1) < 1)
+            if(Math.abs(bestdistancep0 - bestdistancep1) < 2)
             {
                 double total = (double) (bestpointsp0.size() + bestpointsp1.size());
                 result[0] += bestpointsp0.size() / total;
