@@ -123,8 +123,8 @@ public class FXMLDocumentController implements Initializable {
             selector.setVisible(true);
             selector.setCenterX(event.getSceneX());
             selector.setCenterY(event.getSceneY());
-            xInput.setText(Double.toString(event.getSceneX()));
-            yInput.setText(Double.toString(event.getSceneY()));
+            xInput.setText(Integer.toString((int) event.getSceneX()));
+            yInput.setText(Integer.toString((int) event.getSceneY()));
             if(grid.getCurrPlayer().isDone())
                 selector.setVisible(false);
             
@@ -153,7 +153,7 @@ public class FXMLDocumentController implements Initializable {
             {
                 int x = Integer.parseInt(xString);
                 int y = Integer.parseInt(yString);
-                if(x <= canvas.getWidth() && y <= canvas.getHeight() && x >= 0 && y >= 0)
+                if(x < canvas.getWidth() && y < canvas.getHeight() && x >= 0 && y >= 0)
                 {
                     drawPoint(x,y, false);
                     changePlayer();
